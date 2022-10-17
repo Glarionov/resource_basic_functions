@@ -89,7 +89,7 @@ export default {
 
         return {
             initialFormData,
-            formData: {...initialFormData},
+            formData: initialFormData,
             attributeNames: {
                 first_name: 'First Name',
                 last_name: 'Last Name',
@@ -115,7 +115,7 @@ export default {
                         return error;
                     });
 
-                this.formData = this.initialFormData;
+                this.formData = {...this.initialFormData};
 
                 if (response.hasOwnProperty('status') && response.status === 201) {
                     this.appointments.unshift(response.data);
