@@ -10,25 +10,25 @@ abstract class AbstractUpdateOrCreateRequest extends FormRequest
      * List of rules for "update" request
      * @var array
      */
-    public array $updateRequestRules = [];
+    public static array $updateRequestRules = [];
 
     /**
      * Fields required to be in "Create" requests
      * @var array
      */
-    public array $requiredToCreateFields = [];
+    public static array $requiredToCreateFields = [];
 
     /**
      * Adds "required" fields from $requiredToCreateFields to the $updateRequestRules
      * @return array
      */
-    public function generateInputRequestArray(): array
+    public static function generateInputRequestArray(): array
     {
         $result = [];
 
-        foreach ($this->updateRequestRules as $ruleIndex => $rule) {
+        foreach (static::$updateRequestRules as $ruleIndex => $rule) {
             $result[$ruleIndex] = $rule;
-            if (in_array($ruleIndex, $this->requiredToCreateFields)) {
+            if (in_array($ruleIndex, static::$requiredToCreateFields)) {
                 $result[$ruleIndex][] = 'required';
             }
         }
@@ -43,9 +43,8 @@ abstract class AbstractUpdateOrCreateRequest extends FormRequest
      */
     public function rules()
     {
-
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            return $this->generateInputRequestArray();
+            return static::generateInputRequestArray();
         }
 
         return $this->updateRequestRules;

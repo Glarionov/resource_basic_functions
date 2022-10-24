@@ -11,23 +11,19 @@ use voku\helper\ASCII;
 
 class AbstractResourceService
 {
-    protected int $itemsPerPage = 20;
+    protected static int $itemsPerPage = 20;
 
-    protected Model $mainModel;
+    protected static string $mainModel;
 
-    public function __construct(Model $mainModel)
-    {
-        $this->mainModel = $mainModel;
-    }
 
     /**
      * @param Request|null $request
      * @param array $filter
      * @return LengthAwarePaginator|ResourceCollection
      */
-    public function list(Request $request = null, array $filter = [], array $withs = [], $orderBy = ['id', 'desc'])
+    public static function list(array $requestData = null, array $filter = [], array $withs = [], $orderBy = ['id', 'desc'])
     {
-        $baseQuery = $this->mainModel::query();
+        $baseQuery = static::$mainModel::query();
 
         if ($filter) {
             $baseQuery->where($filter);
@@ -41,32 +37,38 @@ class AbstractResourceService
 
         $baseQuery->orderBy($orderBy[0], $orderBy[1]);
 
-        return $baseQuery->paginate($this->itemsPerPage);
+        return $baseQuery->paginate(static::$itemsPerPage);
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param array $requestData
-     * @return Model
+     * @return array
      */
-    public function store(array $requestData)
+    public static function store(array $requestData)
     {
-        $object = new $this->mainModel;
+        $object = new static::$mainModel();
         $object->fill($requestData);
         $object->save();
-        return $object;
+        return ['success' => true, 'data' => $object];
     }
 
     /**
      * Display the specified resource.
      *
      * @param Model $object
-     * @return Model
+     * @return array
      */
-    public function show(Model $object): Model
+    public static function show(int $id): array
     {
-        return $object;
+        $object = static::$mainModel::find($id);
+
+        if (!$object) {
+            $message = "Can't find " . static::$mainModel . " by ID $id";
+            return ['success' => false, 'message' => $message];
+        }
+        return ['success' => true, 'data' => $object];
     }
 
     /**
@@ -74,24 +76,37 @@ class AbstractResourceService
      *
      * @param $request
      * @param Model $object
-     * @return Model
+     * @return array
      */
-    public function update($request, Model $object): Model
+    public static function update($requestData, int $id): array
     {
-        $object->fill($request->all());
+        $objectData = static::show($id);
+        if (!$objectData['success']) {
+            return $objectData;
+        }
+        $object = $objectData['data'];
+
+        $object->fill($requestData);
         $object->save();
-        return $object;
+        return ['success' => true, 'data' => $object];
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param Model $object
-     * @return bool
+     * @param int $id
+     * @return array
      */
 
-    public function destroy(Model $object): bool
+    public static function destroy(int $id): array
     {
-        return $object->delete();
+        $objectData = static::show($id);
+        if (!$objectData['success']) {
+            return $objectData;
+        }
+        $object = $objectData['data'];
+        $object->delete();
+
+        return ['success' => true];
     }
 }

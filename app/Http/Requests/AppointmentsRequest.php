@@ -10,7 +10,7 @@ class AppointmentsRequest extends AbstractUpdateOrCreateRequest
      * List of rules for "update" request
      * @var array
      */
-    public array $updateRequestRules = [
+    public static array $updateRequestRules = [
         'type_id' => ['integer', 'exists:appointments_types,id'],
         'first_name' => ['string'],
         'last_name' => ['string'],
@@ -22,7 +22,7 @@ class AppointmentsRequest extends AbstractUpdateOrCreateRequest
      * Fields required to be in "Create" requests
      * @var array
      */
-    public array $requiredToCreateFields = [
+    public static array $requiredToCreateFields = [
         'user_id',
         'first_name',
         'last_name',
