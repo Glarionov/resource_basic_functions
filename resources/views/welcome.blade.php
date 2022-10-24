@@ -13,9 +13,9 @@
         </div>
 
         <script>
-            window.appointments = @json($appointments);
-            window.appointmentTypes = @json($appointmentTypes);
-            window.validatoinRules = @json($validationRules);
+            {{--window.appointments = @json($appointments);--}}
+            {{--window.appointmentTypes = @json($appointmentTypes);--}}
+            {{--window.validatoinRules = @json($validationRules);--}}
         </script>
 
         <script src="{{mix('/js/app.js')}}"></script>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AppointmentsRequest;
+use App\Http\Services\AbstractResourceService;
 use App\Http\Services\AppointmentService;
 use App\Models\Appointment;
 use App\Models\User;

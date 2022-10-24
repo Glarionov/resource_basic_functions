@@ -24,6 +24,9 @@
         "vue-template-compiler": "^2.6.12"
     },
     "dependencies": {
+        "@inertiajs/inertia": "^0.11.1",
+        "@inertiajs/inertia-vue": "^0.8.0",
+        "@inertiajs/progress": "^0.2.7",
         "js-cookie": "^3.0.1"
     }
 }

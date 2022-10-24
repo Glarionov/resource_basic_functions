@@ -7,14 +7,27 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Str;
+use ReflectionClass;
 use voku\helper\ASCII;
 
 class AbstractResourceService
 {
+    const NOT_FOUND_ERROR = 'not_found';
+
     protected static int $itemsPerPage = 20;
 
     protected static string $mainModel;
 
+    /**
+     * @throws \ReflectionException
+     */
+    protected static function getSingularModelName()
+    {
+        $reflect = new ReflectionClass(static::$mainModel);
+
+        return $reflect->getShortName();
+    }
 
     /**
      * @param Request|null $request
@@ -65,8 +78,8 @@ class AbstractResourceService
         $object = static::$mainModel::find($id);
 
         if (!$object) {
-            $message = "Can't find " . static::$mainModel . " by ID $id";
-            return ['success' => false, 'message' => $message];
+            $message = "Can't find " . static::getSingularModelName() . " by ID $id";
+            return ['success' => false, 'message' => $message, 'error_type' => static::NOT_FOUND_ERROR];
         }
         return ['success' => true, 'data' => $object];
     }

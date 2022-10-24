@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AppointmentsController;
+use App\Helpers\RouteConstructor\RouteConstructor;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,12 +22,16 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::apiResources([
 //    'appointments' => \App\Http\Controllers\AppointmentsController::class,
-    'apples' => \App\Http\Controllers\AppleController::class,
+//    'apples' => \App\Http\Controllers\AppleController::class,
     'tests' => \App\Http\Controllers\TestController::class
 ]);
 
+
+RouteConstructor::constructApiRoutes();
+
 $advancedRoutes = [
-    'appointments' => AppointmentsController::class
+    'appointments' => AppointmentsController::class,
+//    'apples' => \App\Http\Controllers\AppleController::class,
 ];
 
 foreach ($advancedRoutes as $route => $controller) {
@@ -34,3 +39,4 @@ foreach ($advancedRoutes as $route => $controller) {
     Route::delete("/$route", [$controller, 'destroyByFilter']);
     Route::patch("/$route", [$controller, 'updateByFilter']);
 }
+

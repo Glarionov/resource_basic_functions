@@ -8,7 +8,7 @@ import App from "./components/App";
  * building robust, powerful web applications using Vue and Laravel.
  */
 require('./bootstrap');
-window.Vue = require('vue');
+// window.Vue = require('vue');
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -17,7 +17,25 @@ window.Vue = require('vue');
  */
 
 
-const app = new Vue({
-    el: '#app',
-    render: h => h(App),
-});
+// const app = new Vue({
+//     el: '#app',
+//     render: h => h(App),
+// });
+
+
+// import Vue from 'vue'
+import { createInertiaApp } from '@inertiajs/inertia-vue'
+import { InertiaProgress } from '@inertiajs/progress'
+
+InertiaProgress.init()
+
+createInertiaApp({
+    resolve: name => require(`./Pages/${name}`),
+    setup({ el, App, props, plugin }) {
+        Vue.use(plugin)
+
+        new Vue({
+            render: h => h(App, props),
+        }).$mount(el)
+    },
+})
