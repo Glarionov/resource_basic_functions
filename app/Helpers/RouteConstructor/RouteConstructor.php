@@ -15,8 +15,8 @@ class RouteConstructor
     {
         foreach (static::$inertiaRoutes as $route => $controller) {
             Route::apiResource($route, $controller);
-            Route::delete("/api/$route", [$controller, 'destroyByFilter']);
-            Route::patch("/api/$route", [$controller, 'updateByFilter']);
+            Route::delete("/$route-list", [$controller, 'destroyByFilter']);
+            Route::put("/$route-list", [$controller, 'updateByFilter']);
         }
     }
 

@@ -23,7 +23,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::apiResources([
 //    'appointments' => \App\Http\Controllers\AppointmentsController::class,
 //    'apples' => \App\Http\Controllers\AppleController::class,
-    'tests' => \App\Http\Controllers\TestController::class
+//    'tests' => \App\Http\Controllers\TestController::class
 ]);
 
 

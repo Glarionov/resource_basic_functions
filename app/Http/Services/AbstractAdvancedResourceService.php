@@ -20,9 +20,7 @@ class AbstractAdvancedResourceService extends AbstractResourceService
 
     protected static string $mainResource;
 
-    protected static array $listSearchParams = [
-        'user_id' => ['range', 'list']
-    ];
+    protected static array $listSearchParams = [];
 
     /**
      *
@@ -49,7 +47,7 @@ class AbstractAdvancedResourceService extends AbstractResourceService
                     foreach ($valuesList as $value) {
                         $paramQuery->orWhere(function($paramSubQuery) use ($param, $value, $paramConfig, $isStringData) {
                             $filter = [];
-                            $isSimple = empty($paramConfig) || in_array('simple', $paramConfig);
+                            $isSimple = empty($paramConfig) || !in_array('range', $paramConfig);
                             if ($isSimple) {
                                 $filter[] = [$param, $value];
                             } else {
@@ -110,7 +108,7 @@ class AbstractAdvancedResourceService extends AbstractResourceService
                 $paginationResult
             );
         }
-        return $paginationResult;
+        return ['mainObjects' => $baseQuery->paginate(static::$itemsPerPage)];
     }
 
     protected static function createResultFromObject($object)
@@ -187,7 +185,7 @@ class AbstractAdvancedResourceService extends AbstractResourceService
     {
         $baseQuery = static::$mainModel::query();
 
-        static::applyDefaultFilters($baseQuery, $requestData['filter'], false);
+        static::applyDefaultFilters($baseQuery, $requestData['filter'] ?? [], false);
         if ($filter) {
             $baseQuery->where($filter);
         }
@@ -203,7 +201,7 @@ class AbstractAdvancedResourceService extends AbstractResourceService
      * @param int $id
      * @return array
      */
-    public static function destroy(int $id): array
+    public static function destroy($id): array
     {
         $objectData = static::show($id);
         if (!$objectData['success']) {
@@ -226,7 +224,7 @@ class AbstractAdvancedResourceService extends AbstractResourceService
     {
         $baseQuery = static::$mainModel::query();
 
-        static::applyDefaultFilters($baseQuery, $requestData, false);
+        static::applyDefaultFilters($baseQuery, $requestData['filter'], false);
         if ($filter) {
             $baseQuery->where($filter);
         }

@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AppointmentsRequest;
+use App\Http\Services\AbstractAdvancedResourceService;
+use App\Http\Services\AbstractResourceService;
 use App\Http\Services\AppointmentService;
 use App\Models\Appointment;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request as RequestFacade;
 use Inertia\Inertia;
 
@@ -16,7 +19,7 @@ abstract class AbstractResourceController extends Controller
 {
     const RENDER_METHOD_INERTIA = 'inertia';
 
-    protected static $mainService;
+    protected static $mainService = AbstractAdvancedResourceService::class;
 
     protected static $requestType = null;
 
@@ -33,16 +36,22 @@ abstract class AbstractResourceController extends Controller
 
     protected static function returnResult($data, $template = null, Request $request = null)
     {
-
         if (static::$renderMethod === static::RENDER_METHOD_INERTIA) {
 
             if ($request->header('Accept', null) === 'application/json') {
                 return $data;
             }
 
+            if (!$template) {
+//                return Redirect::route('apples.index');
+
+                return redirect(route('apples.index'));
+//                return Redirect::back()->with('success', 'Organization updated.');
+//                return $data;
+            }
+
             return Inertia::render(static::$templatePrefix . $template, $data);
         }
-
         return $data;
     }
 
@@ -54,7 +63,7 @@ abstract class AbstractResourceController extends Controller
     public function index(Request $request)
     {
         $data = static::$mainService::list($request->all());
-        static::returnResult($data, static::$templatePrefix . 'Index', $request);
+        return static::returnResult($data, 'Index', $request);
     }
 
     /**
@@ -83,18 +92,6 @@ abstract class AbstractResourceController extends Controller
         $data = static::$mainService::show($id);
         return static::returnResult($data,  'Show', $request);
 //        return static::$mainService::show($id);
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Appointment  $apointments
-     * @return Model
-     */
-    public function show2(Request $request, int $id)
-    {
-        $data = static::$mainService::show($id);
-        static::returnResult($data, static::$templatePrefix . 'Show', $request);
     }
 
     /**

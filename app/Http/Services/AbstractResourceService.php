@@ -50,7 +50,7 @@ class AbstractResourceService
 
         $baseQuery->orderBy($orderBy[0], $orderBy[1]);
 
-        return $baseQuery->paginate(static::$itemsPerPage);
+        return ['mainObjects' => $baseQuery->paginate(static::$itemsPerPage)];
     }
 
     /**

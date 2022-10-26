@@ -10,9 +10,13 @@ use Illuminate\Support\Facades\Cookie;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Crypt;
 
-class AppleService extends AbstractResourceService
+class AppleService extends AbstractAdvancedResourceService
 {
     public static int $itemsPerPage = 1000;
 
     public static string $mainModel = Apple::class;
+
+    protected static array $listSearchParams = [
+        'id' => ['list']
+    ];
 }

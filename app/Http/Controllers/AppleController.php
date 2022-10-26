@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Services\AppleService;
 use App\Http\Services\AppointmentService;
 
-class AppleController extends AbstractResourceController
+class AppleController extends AbstractAdvancedResourceController
 {
     protected static $mainService = AppleService::class;
 
