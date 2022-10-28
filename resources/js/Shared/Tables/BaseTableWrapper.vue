@@ -3,6 +3,9 @@
         <thead>
         <tr class="text-left font-bold table">
             <th v-if="showSelectCheckboxes" class="pb-4 pt-6 px-6" scope="col">
+                <a href="" @click.prevent="selectAll">
+                    Select all
+                </a>
             </th>
             <th v-if="showIds" class="pb-4 pt-6 px-6" scope="col">
                 ID
@@ -43,11 +46,22 @@ export default {
         selectedRows: {
             type: Array,
             default: []
+        },
+        selectedAll: {
+
         }
+        // selectAll: {
+        //     type: Function
+        // }
     },
     data: () => {
         return {
             // selected: []
+        }
+    },
+    methods: {
+        selectAll(){
+            this.$parent.selectAll(!selectedAll);
         }
     }
 }

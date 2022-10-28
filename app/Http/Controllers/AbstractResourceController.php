@@ -10,11 +10,11 @@ use App\Models\Appointment;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request as RequestFacade;
 use Inertia\Inertia;
-
 abstract class AbstractResourceController extends Controller
 {
     const RENDER_METHOD_INERTIA = 'inertia';
@@ -31,11 +31,13 @@ abstract class AbstractResourceController extends Controller
 
     public function __construct(Request $request)
     {
-        $this->accept = $request->header('Accept', null);
+//        $this->accept = $request->header('Accept', null);
     }
 
     protected static function returnResult($data, $template = null, Request $request = null)
     {
+
+//        todo r
         if (static::$renderMethod === static::RENDER_METHOD_INERTIA) {
 
             if ($request->header('Accept', null) === 'application/json') {
@@ -43,8 +45,20 @@ abstract class AbstractResourceController extends Controller
             }
 
             if (!$template) {
-//                return Redirect::route('apples.index');
 
+//                return Redirect::route('apples.index');
+                if (isset($data['success']) && $data['success'] === false) {
+                    return redirect()->back()->with([
+                        'errorMessage' => $data['message'] ?? '',
+                    ]);
+                    return Redirect::back()->withErrors(['error' => 'error1']);
+//                    return Redirect::back()->withErrors(['error' => $data['message'] ?? '']);
+
+
+                    return Redirect::back()->with('error', 'error');
+                    return Redirect::back()->with('success', false)->with('message', $data['message'] ?? '');
+                }
+                return Redirect::back()->with(['success' => true, 'errorMessage' => '']);
                 return redirect(route('apples.index'));
 //                return Redirect::back()->with('success', 'Organization updated.');
 //                return $data;
@@ -62,7 +76,24 @@ abstract class AbstractResourceController extends Controller
      */
     public function index(Request $request)
     {
+//        return Inertia::render('Organizations/Index', [
+//            'filters' => \Illuminate\Support\Facades\Request::all('search', 'trashed'),
+//            'organizations' => Auth::user()->account->organizations()
+//                ->orderBy('name')
+//                ->filter(RequestFacade::only('search', 'trashed'))
+//                ->paginate(10)
+//                ->withQueryString()
+//                ->through(fn ($organization) => [
+//                    'id' => $organization->id,
+//                    'name' => $organization->name,
+//                    'phone' => $organization->phone,
+//                    'city' => $organization->city,
+//                    'deleted_at' => $organization->deleted_at,
+//                ]),
+//        ]);
+
         $data = static::$mainService::list($request->all());
+
         return static::returnResult($data, 'Index', $request);
     }
 

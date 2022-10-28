@@ -17,6 +17,8 @@ class AppleService extends AbstractAdvancedResourceService
     public static string $mainModel = Apple::class;
 
     protected static array $listSearchParams = [
-        'id' => ['list']
+        'id' => ['list'],
+        'weight' => ['simple'],
+        'size' => ['range']
     ];
 }

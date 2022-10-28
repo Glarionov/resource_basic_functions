@@ -22,15 +22,25 @@ class AbstractAdvancedResourceService extends AbstractResourceService
 
     protected static array $listSearchParams = [];
 
+    protected static bool $needSpecifyAll = true;
+
     /**
      *
      *
      * @param $baseQuery
      * @param $requestData
-     * @return void
+     * @return bool[]
      */
-    protected static function applyDefaultFilters(&$baseQuery, $requestData, $isStringData = true) {
+    protected static function applyDefaultFilters(&$baseQuery, $requestData, $isStringData = true): array
+    {
+        $appliedFilters = false;
+
         foreach (static::$listSearchParams as $param => $paramConfig) {
+
+            if (!empty($requestData[$param])) {
+                $appliedFilters = true;
+            }
+
             $baseQuery->where(function ($paramQuery) use ($param, $paramConfig, $requestData, $isStringData) {
                 if (isset($requestData[$param])) {
                     $rawValue = $requestData[$param];
@@ -52,7 +62,7 @@ class AbstractAdvancedResourceService extends AbstractResourceService
                                 $filter[] = [$param, $value];
                             } else {
                                 if (in_array('range', $paramConfig)) {
-                                    if ($isStringData) {
+                                    if ($isStringData && is_string($value)) {
                                         $values = explode('-', $value);
                                     } else {
                                         $values = $value;
@@ -68,12 +78,20 @@ class AbstractAdvancedResourceService extends AbstractResourceService
                                     }
                                 }
                             }
-                            $paramSubQuery->orWhere($filter);
+                            if (!empty($filter)) {
+                                $paramSubQuery->orWhere($filter);
+                            }
+
                         });
                     }
                 }
             });
         }
+
+        if (!$appliedFilters && empty($requestData['all']) && static::$needSpecifyAll) {
+            return ['success' => false, 'message' => 'No filters applied. Send all=true param to change all data'];
+        }
+        return ['success' => true];
     }
 
     /**
@@ -87,7 +105,7 @@ class AbstractAdvancedResourceService extends AbstractResourceService
     {
         $baseQuery = static::$mainModel::query();
 
-        static::applyDefaultFilters($baseQuery, $requestData);
+        static::applyDefaultFilters($baseQuery, $requestData['filter'] ?? $requestData);
 
         if ($filter) {
             $baseQuery->where($filter);
@@ -108,7 +126,7 @@ class AbstractAdvancedResourceService extends AbstractResourceService
                 $paginationResult
             );
         }
-        return ['mainObjects' => $baseQuery->paginate(static::$itemsPerPage)];
+        return ['mainObjects' => $baseQuery->paginate(static::$itemsPerPage), 'filter' => $requestData['filter'] ?? []];
     }
 
     protected static function createResultFromObject($object)
@@ -185,12 +203,16 @@ class AbstractAdvancedResourceService extends AbstractResourceService
     {
         $baseQuery = static::$mainModel::query();
 
-        static::applyDefaultFilters($baseQuery, $requestData['filter'] ?? [], false);
+        $applyFilterResult = static::applyDefaultFilters($baseQuery, $requestData['filter'] ?? [], false);
+
+        if (!$applyFilterResult['success']) {
+            return $applyFilterResult;
+        }
         if ($filter) {
             $baseQuery->where($filter);
         }
 
-        $baseQuery->update($requestData['new_values']);
+        $baseQuery->update($requestData['newValues']);
 
         return ['success' => true];
     }
@@ -224,7 +246,11 @@ class AbstractAdvancedResourceService extends AbstractResourceService
     {
         $baseQuery = static::$mainModel::query();
 
-        static::applyDefaultFilters($baseQuery, $requestData['filter'], false);
+        $applyFilterResult = static::applyDefaultFilters($baseQuery, $requestData['filter'], false);
+
+        if (!$applyFilterResult['success']) {
+            return $applyFilterResult;
+        }
         if ($filter) {
             $baseQuery->where($filter);
         }
