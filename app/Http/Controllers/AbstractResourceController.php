@@ -97,6 +97,11 @@ abstract class AbstractResourceController extends Controller
         return static::returnResult($data, 'Index', $request);
     }
 
+    public function create(Request $request)
+    {
+        return static::returnResult([], 'Create', $request);
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -109,7 +114,8 @@ abstract class AbstractResourceController extends Controller
             $request->validate(static::$requestType::generateInputRequestArray());
         }
 
-        return static::$mainService::store($request->all());
+        $data = static::$mainService::store($request->all());
+        return static::returnResult($data,  null, $request);
     }
 
     /**

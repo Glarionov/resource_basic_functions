@@ -33,6 +33,12 @@ abstract class AbstractUpdateOrCreateRequest extends FormRequest
             }
         }
 
+        $otherKeys = array_diff(static::$requiredToCreateFields, array_keys(static::$updateRequestRules));
+
+        foreach ($otherKeys as $ruleIndex) {
+            $result[$ruleIndex] = ['required'];
+        }
+
         return $result;
     }
 

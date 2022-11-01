@@ -7,6 +7,10 @@
         </h1>
         <div class="bg-white rounded-md shadow overflow-x-auto p-2">
 
+            <Link class="btn btn-success" href="/apples/create">
+                <span>Create</span>
+                <span class="hidden md:inline">&nbsp;Apple</span>
+            </Link>
             <div class="filters">
                 <form @submit.prevent="search">
                     <div class="d-flex">
@@ -41,7 +45,9 @@
             <div class=" col-12 col-md-11 col-lg-10 col-xl-10 ma">
                 <BaseTableWrapper :defaultColNames="this.defaultColNames" :mainObjects="mainObjects"
                                   :selectAll="selectAll"
-                                  :selectedRows="selectedRows">
+                                  :selectedRows="selectedRows"
+                                  :selectWord="selectWord"
+                >
                     <template v-slot="slotProps">
                         <td class="border-t">
                             {{ slotProps.mainObject.color }}
@@ -100,7 +106,7 @@
 </template>
 
 <script>
-import {Head} from '@inertiajs/inertia-vue'
+import {Head, Link} from '@inertiajs/inertia-vue'
 import BaseTableWrapper from '../../Shared/Tables/BaseTableWrapper';
 
 
@@ -115,9 +121,9 @@ import BaseTableWrapper from '../../Shared/Tables/BaseTableWrapper';
 export default {
     components: {
         Head,
-        BaseTableWrapper
+        BaseTableWrapper,
         // Icon,
-        // Link,
+        Link,
         // Pagination,
         // SearchFilter,
     },
@@ -132,6 +138,9 @@ export default {
     computed: {
         errorMessage() {
             return this.$page.props.hasOwnProperty('flash') ? this.$page.props.flash.errorMessage: '';
+        },
+        selectWord() {
+            return this.selectedAll? 'Unselect': 'Select';
         }
     },
     data() {
@@ -140,6 +149,7 @@ export default {
             newSize: null,
             newWeight: null,
             selectedRows: [],
+            selectedAll: false,
             filter: this.$inertia.form({
                 // filter: {
                 //     size: [null, null],
@@ -213,11 +223,13 @@ export default {
                 preserveState: true
             });
         },
-        selectAll(state = true) {
+        selectAll() {
+            let newValue = !this.selectedAll;
             this.selectedRows = [];
             for (let index in this.mainObjects.data) {
-                this.selectedRows[this.mainObjects.data[index].id] = state;
+                this.selectedRows[this.mainObjects.data[index].id] = newValue;
             }
+            this.selectedAll = newValue;
         }
     },
 }

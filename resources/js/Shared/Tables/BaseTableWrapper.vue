@@ -2,9 +2,9 @@
     <table class="table">
         <thead>
         <tr class="text-left font-bold table">
-            <th v-if="showSelectCheckboxes" class="pb-4 pt-6 px-6" scope="col">
+            <th v-if="showSelectCheckboxes" class="pb-4 pt-6 px-6 select-rows-col" scope="col">
                 <a href="" @click.prevent="selectAll">
-                    Select all
+                    {{selectWord}} all
                 </a>
             </th>
             <th v-if="showIds" class="pb-4 pt-6 px-6" scope="col">
@@ -49,6 +49,9 @@ export default {
         },
         selectedAll: {
 
+        },
+        selectWord: {
+
         }
         // selectAll: {
         //     type: Function
@@ -61,12 +64,18 @@ export default {
     },
     methods: {
         selectAll(){
-            this.$parent.selectAll(!selectedAll);
+            this.$parent.selectAll();
         }
     }
 }
 </script>
 
 <style scoped>
+    .select-rows-col {
+        width: 95px;
+    }
 
+    .select-rows-col a{
+        color: black;
+    }
 </style>
